@@ -1,0 +1,12 @@
+Create necessery tables and database using command bellow
+
+
+create table session( user_id int, session_id char(128) primary key, expire_time datetime, foreign key(user_id) references user(user_id) );
+
+
+
+functions I have created are 
+    cookie_exist // takes no input and return true or false
+    get_session_from_cookie // takes no input and return "Null" or <session_id of length 128> which is a string
+    get_user_id // takes the database connection object as input and return an array|| 0th index is True or False, 1th index is the user_id of the user if identified
+    db_connection // takes no input and return daatabase connection object

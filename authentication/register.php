@@ -1,7 +1,16 @@
 <?php
-include("../db_connection.php"); // Include your database connection file
+include("../db_connection.php");
+include("session_check.php"); // Include session check file
+$conn = db_connection(); // Establish database connection
+$user_exist = get_user_id(conn: $conn)[0]; // Check if the user is alreaady logged in;
+
+if ($user_exist === True) {
+    header(header: "Location: ../home.php"); // Redirect to home page if user is already logged in
+}
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     // Get the input data
     $username = trim($_POST['username']);
     $name = trim($_POST['name']);
@@ -25,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Name cannot be empty.";
     }
 
-    if (strlen($password) < 6) {
+    if (strlen(string: $password) < 6) {
         $errors[] = "Password must be at least 6 characters long.";
     }
 
@@ -148,5 +157,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </body>
 </html>
-?>
 
