@@ -49,4 +49,34 @@ function set_cookie($name, $value, $expire_in_seconds, $path="/", $domain="", $s
 function generateSessionKey($length = 64): string {
     return bin2hex(string: random_bytes(length: $length));
 }
+
+function username_exist($username , $conn): bool {
+    $sql = "SELECT 1 FROM user WHERE username = '$username'";
+    $result = $conn->query(query: $sql);
+    if ($result->num_rows > 0) {
+        return true; // Username exists
+    }else{
+        return false; // Username does not exist
+    }
+}
+function email_exist($email , $conn): bool {
+    $sql = "SELECT 1 FROM user WHERE email = '$email'";
+    $result = $conn->query(query: $sql);
+    if ($result->num_rows > 0) {
+        return true; // email exists
+    }else{
+        return false; // email does not exist
+    }
+}
+
+function phone_number_exist($phone_number , $conn): bool {
+    $sql = "SELECT 1 FROM user WHERE phone_number = '$phone_number'";
+    $result = $conn->query(query: $sql);
+    if ($result->num_rows > 0) {
+        return true; // phone_number exists
+    }else{
+        return false; // phone_number does not exist
+    }
+}
+
 ?>

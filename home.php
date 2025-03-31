@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            background: #e3e6ea;
+            background:rgb(255, 255, 255);
             color: #333;
         }
 
@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             ?>
             <div class="buttons">
                 <a href="task_manager/dashboard.php" class="action-button dashboard-button">Dashboard</a>
-                <a href="user_management/personal_info.php" class="action-button personal-button">Personal Info</a>
+                <a href="user_management/personal_Profile.php" class="action-button personal-button">Personal Profile</a>
                 <a href="colaboration/groups.php" class="action-button group-button">Groups</a>
             </div>
         </div>

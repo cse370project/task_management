@@ -22,9 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Username cannot be empty.";
     } else {
         // Check if the username already exists in the database
-        $sql = "SELECT 1 FROM user WHERE username = '$username'";
-        $result = $conn->query(query: $sql);
-        if ($result->num_rows > 0) {
+        
+        if (username_exist(username: $username, conn: $conn)) {
             $errors[] = "Username already exists.";
         }
         
