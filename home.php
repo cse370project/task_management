@@ -2,7 +2,7 @@
 include("authentication/session_check.php");
 include("db_connection.php");
 $conn = db_connection(); // Establish database connection
-$user_data = get_user_id(conn: $conn);
+$user_data = get_user_existence_and_id(conn: $conn);
 $user_exist = $user_data[0];
 if ($user_exist === False) {
     header(header: "Location: authentication/login.php"); // Redirect to login page if user is not logged in
@@ -13,10 +13,11 @@ if ($user_exist === False) {
     $row = $result->fetch_assoc();
     $name = $row['name'];
     $type = $row['type'];
+    $joining_date = $row['joining_date'];
 
 }
-function delete_session($conn, $user_id) {
-    $sql = "DELETE FROM sessions WHERE user_id = '$user_id'";
+function delete_session($conn, $user_id): bool {
+    $sql = "DELETE FROM session WHERE user_id = '$user_id'";
     if ($conn->query($sql) === TRUE) {
         return true;
     } else {
@@ -28,18 +29,17 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     // Check if the logout button was clicked
     if (isset($_POST['logout'])) {
         // Delete the session from the database
-        delete_session(conn: $conn, user_id: $user_id);
-        // Clear the session cookie
-        setcookie(name: 'session_id', value: '', expires_or_options: time() - 3600, path: '/', domain: '', secure: true, httponly: true);
-        // Redirect to the login page
-        header(header: "Location: authentication/login.php");
-    } else if (isset($_POST['personal'])) {
-        // Redirect to personal page
-        header(header: "Location: ./task_manager/tasks.php");
-    } else if (isset($_POST['groups'])) {
-        // Redirect to groups page
-        header(header: "Location: ./colaboration/groups.php");
-    }
+        if (delete_session(conn: $conn, user_id: $user_id)) {
+
+            // Clear the session cookie
+            
+            $cookie_value = "";
+            set_cookie(name: 'session_id', value: $cookie_value, expire_in_seconds: 86400, path: '/', domain: '', secure: False, httponly: True);
+
+            
+            header(header: "Location: authentication/login.php");
+        }
+    } 
 }
 
 ?>
@@ -51,13 +51,12 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <style>
-        /* General Reset */
         body, html {
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            background: #ffffff; /* White background */
-            color: #000000; /* Black text */
+            background: #e3e6ea;
+            color: #333;
         }
 
         .container {
@@ -70,56 +69,72 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 
         .greeting-box {
             text-align: center;
-            padding: 20px 40px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px 50px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         h1.greeting {
-            font-size: 2.2em;
-            margin: 0 0 20px 0;
+            font-size: 2.4em;
+            margin: 0 0 15px 0;
+            font-weight: 600;
         }
 
-        h1.greeting .name {
-            font-weight: bold;
-        }
-
-        /* Buttons Container */
         .buttons {
             display: flex;
-            gap: 20px;
+            justify-content: center;
+            gap: 15px;
             margin-top: 20px;
         }
 
-        /* Button Styling */
         .action-button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 1em;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-button {
+            background-color: #3a3d40;
+            color: #ffffff;
+        }
+
+        .dashboard-button:hover {
+            background-color: #292b2c;
         }
 
         .personal-button {
-            background-color: #007bff; /* Blue button */
+            background-color: #0056b3;
             color: #ffffff;
         }
 
         .personal-button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+            background-color: #004494;
         }
 
         .group-button {
-            background-color: #28a745; /* Green button */
+            background-color: #198754;
             color: #ffffff;
         }
 
         .group-button:hover {
-            background-color: #1e7e34; /* Darker green on hover */
+            background-color: #146c43;
         }
 
-        /* Logout Button */
         .logout-form {
             position: absolute;
             top: 20px;
@@ -128,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 
         .logout-button {
             padding: 10px 20px;
-            background-color: #ff4553; /* Red button */
+            background-color: #d9534f;
             color: #ffffff;
             border: none;
             border-radius: 5px;
@@ -138,52 +153,26 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         }
 
         .logout-button:hover {
-            background-color: #d13e47; /* Darker red on hover */
-        }
-
-        @media (max-width: 768px) {
-            h1.greeting {
-                font-size: 1.8em;
-            }
-
-            .greeting-box {
-                padding: 15px 30px;
-            }
-
-            .action-button {
-                font-size: 0.9em;
-            }
-
-            .logout-button {
-                font-size: 0.9em;
-            }
+            background-color: #c9302c;
         }
     </style>
 </head>
 <body>
-    <!-- Logout Form -->
     <form method="POST" action="home.php" class="logout-form">
         <button type="submit" class="logout-button" name="logout">Logout</button>
     </form>
-
     <div class="container">
         <div class="greeting-box">
             <?php
             echo "<h1 class='greeting'>Hello, <span class='name'>$name</span></h1>";
+            echo "<h2 class='date'> joining date : <span class='name'>$joining_date</span></h2>";
             ?>
             <div class="buttons">
-                <!-- Personal Button -->
-                <form method="POST" action="home.php">
-                    <button type="submit" class="action-button personal-button" name="personal">Personal</button>
-                </form>
-
-                <!-- Group Button -->
-                <form method="POST" action="home.php">
-                    <button type="submit" class="action-button group-button" name="groups">Groups</button>
-                </form>
+                <a href="task_manager/dashboard.php" class="action-button dashboard-button">Dashboard</a>
+                <a href="user_management/personal_info.php" class="action-button personal-button">Personal Info</a>
+                <a href="colaboration/groups.php" class="action-button group-button">Groups</a>
             </div>
         </div>
     </div>
 </body>
 </html>
-

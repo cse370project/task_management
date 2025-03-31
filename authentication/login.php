@@ -3,14 +3,10 @@
 include("../db_connection.php");
 include("session_check.php"); // Include session check file
 $conn = db_connection(); // Establish database connection
-$user_exist = get_user_id(conn: $conn)[0]; // Check if the user is alreaady logged in;
+$user_exist = get_user_existence_and_id(conn: $conn)[0]; // Check if the user is alreaady logged in;
 
 if ($user_exist === True) {
     header(header: "Location: ../home.php"); // Redirect to home page if user is already logged in
-}
-
-function generateSessionKey($length = 64): string {
-    return bin2hex(string: random_bytes(length: $length));
 }
 
 
@@ -50,7 +46,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
         // done storing the session id in the database
 
         // Set the session cookie
-        setcookie(name: 'session_id', value: $session_id, expires_or_options: time() + 86400, path: '/', domain: '', secure: true, httponly: true);
+        set_cookie(name: 'session_id', value: $session_id,expire_in_seconds: 86400, path: '/', domain: '', secure: False, httponly: False);
         // Redirect to the home page
         header(header: "Location: ../home.php");
 

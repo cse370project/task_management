@@ -2,7 +2,7 @@
 include("../db_connection.php");
 include("session_check.php"); // Include session check file
 $conn = db_connection(); // Establish database connection
-$user_exist = get_user_id(conn: $conn)[0]; // Check if the user is alreaady logged in;
+$user_exist = get_user_existence_and_id(conn: $conn)[0]; // Check if the user is alreaady logged in;
 
 if ($user_exist === True) {
     header(header: "Location: ../home.php"); // Redirect to home page if user is already logged in
@@ -42,8 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
        // Validation passed - process the data
         $hashed_password = base64_encode(hash('sha3-256', $password)); // Save hashed password in Base64 format
-        
-        $insertSql = "INSERT INTO user (username, name, type, password_hash) VALUES ('$username', '$name', 'guest' , '$hashed_password')";
+    
+        $joining_date = date(format: 'Y-m-d');    
+        $insertSql = "INSERT INTO user (username, name, type, password_hash, joining_date) VALUES ('$username', '$name', 'guest' , '$hashed_password' , '$joining_date')";
         $result = $conn->query(query: $insertSql);
         
     }

@@ -18,7 +18,7 @@ function get_session_from_cookie(): string{
     }
 }
 
-function get_user_id($conn): array{
+function get_user_existence_and_id($conn): array{
     $session_id = get_session_from_cookie();
     if ($session_id === "Null"){
         return [False, "Null"]; // Unknown user
@@ -36,4 +36,17 @@ function get_user_id($conn): array{
     
 
 }    
+
+function set_cookie($name, $value, $expire_in_seconds, $path="/", $domain="", $secure=False, $httponly=False ): void {
+    $expires = gmdate(format: 'D, d-M-Y H:i:s T', timestamp: time() + $expire_in_seconds); // Expiration date in GMT
+    $domain_header = "Domain=".$domain.";";
+    if ($domain === "") {
+        $domain_header = ""; // No domain header if domain is empty
+    }    
+    header(header: "Set-Cookie: $name=$value; expires=$expires; Max-Age=86400; path=".$path.";".$domain_header.($secure ? "secure;" : "").  ($httponly ? "HttpOnly" : ""));
+
+}// a modified version of set cookie function of php. which manually sets the cookie header.
+function generateSessionKey($length = 64): string {
+    return bin2hex(string: random_bytes(length: $length));
+}
 ?>
