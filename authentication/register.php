@@ -2,19 +2,19 @@
 include("../db_connection.php");
 include("session_check.php"); // Include session check file
 $conn = db_connection(); // Establish database connection
-$user_exist = get_user_existence_and_id(conn: $conn)[0]; // Check if the user is alreaady logged in;
+$user_exist = get_user_existence_and_id(conn: $conn)[0]; // Check if the user is already logged in;
 
 if ($user_exist === True) {
     header(header: "Location: ../home.php"); // Redirect to home page if user is already logged in
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Get the input data
-    $username = trim($_POST['username']);
-    $name = trim($_POST['name']);
+    $username = trim(string: $_POST['username']);
+    $name = trim(string: $_POST['name']);
     $password = $_POST['password'];
+    $retype_password = $_POST['retype_password'];
 
     // Validation logic
     $errors = [];
@@ -22,11 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Username cannot be empty.";
     } else {
         // Check if the username already exists in the database
-        
-        if (username_exist(username: $username, conn: $conn)) {
+        if (username_exist(username: $username, conn: $conn, user_id: 0)) {
             $errors[] = "Username already exists.";
         }
-        
     }
 
     if (empty($name)) {
@@ -36,16 +34,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (strlen(string: $password) < 6) {
         $errors[] = "Password must be at least 6 characters long.";
     }
-
-    // If there are validation errors, display them
-    if (empty($errors)) {
-       // Validation passed - process the data
-        $hashed_password = base64_encode(hash('sha3-256', $password)); // Save hashed password in Base64 format
     
+    if ($password !== $retype_password) {
+        $errors[] = "Passwords do not match.";
+    }
+
+    // If there are no validation errors, proceed with registration
+    if (empty($errors)) {
+        $hashed_password = base64_encode(string: hash(algo: 'sha3-256', data: $password)); // Save hashed password in Base64 format
         $joining_date = date(format: 'Y-m-d');    
         $insertSql = "INSERT INTO user (username, name, type, password_hash, joining_date) VALUES ('$username', '$name', 'guest' , '$hashed_password' , '$joining_date')";
         $result = $conn->query(query: $insertSql);
-        
     }
 } 
 
@@ -72,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 20px;
             max-width: 400px;
             width: 100%;
+            position: relative;
         }
         .form-container h1 {
             text-align: center;
@@ -83,6 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #555555;
             font-weight: bold;
         }
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
         .form-container input[type="text"],
         .form-container input[type="password"] {
             width: 100%;
@@ -91,6 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 4px;
             margin-bottom: 15px;
             font-size: 14px;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: -10px;
+            margin-bottom: 15px;
         }
         .form-container button {
             width: 100%;
@@ -125,6 +137,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #555555;
         }
     </style>
+    <script>
+        function togglePassword() {
+            var passwordField = document.getElementById("password");
+            var checkbox = document.getElementById("show-password");
+            passwordField.type = checkbox.checked ? "text" : "password";
+        }
+    </script>
 </head>
 <body>
     <div class="form-container">
@@ -148,7 +167,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="text" id="name" name="name" placeholder="Enter Here (Full Name)" required>
             
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Enter Here (Must be at least 6 characters)" required>
+            <div class="input-container">
+                <input type="password" id="password" name="password" placeholder="Enter Here (Must be at least 6 characters)" required>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="show-password" onclick="togglePassword()">
+                <label for="show-password">Show password</label>
+            </div>
+            
+            <label for="retype_password">Retype Password:</label>
+            <input type="password" id="retype_password" name="retype_password" placeholder="Re-enter Password" required>
             
             <button type="submit">Register</button>
         </form>
@@ -157,4 +185,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </body>
 </html>
-

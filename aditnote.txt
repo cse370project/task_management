@@ -23,6 +23,7 @@ CREATE TABLE session (
     user_id INT,
     session_id CHAR(128) PRIMARY KEY,
     expire_time DATETIME,
+    device_login_info VARCHAR(809),
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
