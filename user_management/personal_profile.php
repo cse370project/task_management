@@ -14,7 +14,7 @@ if ($user_data[0]) {
     $row = $result->fetch_assoc();
 
     // Convert gender abbreviation to full text
-    function getGenderFullName($genderChar) {
+    function getGenderFullName($genderChar): string {
         switch (strtolower($genderChar)) {
             case 'm': return 'Male';
             case 'f': return 'Female';

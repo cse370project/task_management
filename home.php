@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             ?>
             <div class="buttons">
                 <a href="task_manager/dashboard.php" class="action-button dashboard-button">Dashboard</a>
-                <a href="user_management/personal_Profile.php" class="action-button personal-button">Personal Profile</a>
+                <a href="user_management/personal_profile.php" class="action-button personal-button">Personal Profile</a>
                 <a href="colaboration/groups.php" class="action-button group-button">Groups</a>
             </div>
         </div>
