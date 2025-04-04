@@ -26,7 +26,7 @@ if ($user_data[0]) {
 
 } else {
     header(header: "Location: ../authentication/login.php");
-    exit;
+    exit();
 }
 
 ?>

@@ -6,6 +6,7 @@ $user_exist = get_user_existence_and_id(conn: $conn)[0]; // Check if the user is
 
 if ($user_exist === True) {
     header(header: "Location: ../home.php"); // Redirect to home page if user is already logged in
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -14,11 +14,15 @@ function getDeviceNameFromUserAgent($userAgent) {
   return 'Unknown Device';
 }
 
+
+
 $password_errors = [] ;
 $password_success = [] ;
 $ac_delete_errors = [] ;
 $report_errors = [] ;
 $report_success = [] ;
+
+$genral_error = [];
 // Check if the user is logged in
 
 $user_data = get_user_existence_and_id(conn: $conn);
@@ -28,6 +32,7 @@ if ($user_exist) {
     $user_id = $user_data[1];
 }else{
     header(header: "Location: ../authentication/login.php");
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -86,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   $result = $conn->query(query: $sql);
                   if ($result) {
                       header(header: "Location: ../authentication/login.php?account_deleted=true");
+                      exit();
                   } else {
                       $ac_delete_errors[] = "Unexpected error. Failed to delete account. Please try again.";
                   }
@@ -96,22 +102,82 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else if ($form_id == 'report_to_admin') {
             // Handle the report to admin form
             $report_subject = $_POST['report_subject'];
-            $report_content = $_POST['report_content'];
-            
+            $report_details = $_POST['report_details'];
+            if (strlen($report_subject)==0){
+                $report_errors[] = "Subject cannot be empty.";
+            }
+            if (strlen(string: $report_details)==0){
+                $report_errors[] = "Report details cannot be empty.";
+            }
+            // Generate a random report ID
+            $generated_report_id = bin2hex(string: random_bytes(length: 64));
+            // checking if the rport_id is unique or not
+            $sql = "SELECT 1 FROM reports WHERE report_id = '$generated_report_id'";
+            $result = $conn->query(query: $sql);
+            while ($result->num_rows > 0) {
+                $generated_report_id = bin2hex(string: random_bytes(length: 64));
+                $sql = "SELECT 1 FROM reports WHERE report_id = '$generated_report_id'";
+                $result = $conn->query(query: $sql);
+            }
+
             // Handle file upload if any
             if (isset($_FILES['report_file']) && $_FILES['report_file']['error'] == 0) {
-                $file_name = $_FILES['report_file']['name'];
-                $file_tmp = $_FILES['report_file']['tmp_name'];
-                move_uploaded_file($file_tmp, "uploads/" . $file_name);
-                echo "File uploaded successfully: " . $file_name;
+              // Check if the file size is under 10MB (10 * 1024 * 1024 bytes)
+              if ($_FILES['report_file']['size'] > 10 * 1024 * 1024) {
+                  $report_errors[] = "File size exceeds the 10MB limit.";
+                  
+              }
+          
+              // Validate file MIME type for JPEG and PNG
+              $file_mime_type = mime_content_type(filename: $_FILES['report_file']['tmp_name']);
+              if (!in_array(needle: $file_mime_type, haystack: ['image/jpeg', 'image/png'])) {
+                  $report_errors[] = "Invalid file type. Only JPEG and PNG files are allowed.";
+              
+              }
+              
+              // Check for errors in the file upload
+              if (empty($report_errors)) {
+                  $extension = $file_mime_type === 'image/png' ? '.png' : '.jpg';
+                  $file_name = $generated_report_id . $extension;
+
+                  $destination = "../resources/images/reports/" . $file_name ;
+              
+                  // Move the uploaded file
+                  $file_tmp = $_FILES['report_file']['tmp_name'];
+                  $uploaded = move_uploaded_file(from: $file_tmp, to: $destination);
+                  if (!$uploaded) {
+                      $report_errors[] = "Failed to upload the file. Please try again.";
+                  } else{
+                      // File upload successful, proceed with database insertion
+                      $today = date("Y-m-d");
+                      $sql = "INSERT INTO reports (user_id, report_id, subject, details, file_extension, submission_date, status ) VALUES ('$user_id', '$generated_report_id', '$report_subject', '$report_details', '$extension', '$today', 'P' )";
+                      $result = $conn->query(query: $sql);
+                      if ($result) {
+                          $report_success[] = "Report submitted successfully.";
+                      } else {
+                          unlink(filename: $destination); // Delete the uploaded file if database insertion fails
+                          $report_errors[] = "Failed to submit the report. Please try again.";
+                      }
+                  }
+              }
+
+            } else {
+              $today = date("Y-m-d");
+              $sql = "INSERT INTO reports (user_id, report_id, subject, details, submission_date, status ) VALUES ('$user_id', '$generated_report_id', '$report_subject', '$report_details', '$today', 'P' )";
+              $result = $conn->query(query: $sql);
+              if ($result) {
+                  $report_success[] = "Report submitted successfully.";
+              } else {
+                  $report_errors[] = "Failed to submit the report. Please try again.";
+              }
+
             }
-            
-            echo "Report submitted successfully.";
+
         } else {
-            echo "Invalid form ID.";
+            $genral_error[] = "Invalid form ID.";
         }
     } else {
-        echo "Invalid form submission.";
+        $genral_error[] = "Invalid form submission.";
     }
 }
 
@@ -251,6 +317,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       text-align: center;
       margin-bottom: 20px;
     }
+    .view-reports-btn {
+        padding: 8px 16px;
+        font-size: 1rem;
+        background-color:rgb(225, 38, 38);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .view-reports-btn:hover {
+        background-color:rgb(130, 37, 37);
+    }
+
+
     /* Modal background */
 .modal-background {
     display: none; /* Hidden by default */
@@ -413,17 +495,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           ?>
           <div class="form-group">
             <label for="old_password">Old Password:</label>
-            <input type="password" id="old_password" name="old_password" required>
+            <input type="password" id="old_password" name="old_password" placeholder="Enter your account's old password" required>
           </div>
           
           <div class="form-group">
             <label for="new_password">New Password:</label>
-            <input type="password" id="new_password" name="new_password" required>
+            <input type="password" id="new_password" name="new_password" placeholder="Enter new password ( minimum length is 6 )" required>
           </div>
           
           <div class="form-group">
             <label for="retype_new_password">Retype New Password:</label>
-            <input type="password" id="retype_new_password" name="retype_new_password" required>
+            <input type="password" id="retype_new_password" name="retype_new_password" placeholder="Retype new password" required>
           </div>
           
           <button type="submit" class="submit-btn">Change Password</button>
@@ -446,11 +528,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ?>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" placeholder="Enter your account's Password" required>
             </div>
             <div class="form-group">
                 <label for="retype_password">Retype Password:</label>
-                <input type="password" id="retype_password" name="retype_password" required>
+                <input type="password" id="retype_password" name="retype_password" placeholder="Retype your account's Password" required>
             </div>
             <button type="button" onclick="openModal()" class='red-btn' >Delete Account</button>
         </form>
@@ -471,25 +553,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <!-- Report to Admin Section -->
       <div class="report-admin">
         <h2 class="section-title">Report to Admin</h2>
+        <?php
+        // Display report errors if any
+        if (!empty($report_errors)) {
+            echo "<div style='color: red; margin-bottom: 10px; text-align: center;'>";
+            foreach ($report_errors as $error) {
+                echo "<p>$error</p>";
+            }
+            echo "</div>";
+        }
+        // Display report success message if any
+        if (!empty($report_success)) {
+            echo "<div style='color: green; margin-bottom: 10px; text-align: center;'>";
+            foreach ($report_success as $success) {
+                echo "<p>$success</p>";
+            }
+            echo "</div>";
+        }
+        ?>
         <form action="./security.php" method="POST" enctype="multipart/form-data">
               <!-- Hidden input for form identification -->
           <input type="hidden" name="form_id" value="report_to_admin">
           <div class="form-group">
             <label for="report_subject">Subject:</label>
-            <input type="text" id="report_subject" name="report_subject" required placeholder="Enter report subject">
+            <input type="text" id="report_subject" name="report_subject" required placeholder="Enter report subject (1 to 100 characters)">
           </div>
           
           <div class="form-group">
-            <label for="report_content">Report Details:</label>
-            <textarea id="report_content" name="report_content" required placeholder="Describe your issue in detail"></textarea>
+            <label for="report_details">Report Details:</label>
+            <textarea id="report_details" name="report_details" required placeholder="Describe your issue in detail (1 to 1000 characters)"></textarea>
           </div>
           
           <div class="form-group">
             <label for="report_file">Attach File (Optional):</label>
             <input type="file" id="report_file" name="report_file">
           </div>
-          
-          <button type="submit" class="submit-btn">Submit Report</button>
+          <div style="justify-content: center; display: flex; gap: 16px;">
+            <button type="submit" class="submit-btn">Submit Report</button>
+            <button class="view-reports-btn" onclick="window.location.href='../reports_management/reports.php'">View Reports</button>
+          </div>
         </form>
       </div>
     </div>

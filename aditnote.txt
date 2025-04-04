@@ -27,6 +27,14 @@ CREATE TABLE session (
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
+CREATE TABLE report (
+    user_id INT,
+    report_id CHAR(128) PRIMARY KEY,
+    subject VARCHAR(100),
+    details VARCHAR(1000),
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
 
 
 
@@ -36,3 +44,26 @@ functions I have created are
     ***get_user_existence_and_id // takes the database connection object as input and return an array|| 0th index is True or False, 1th index is the user_id of the user if identified
     ***db_connection // takes no input and return daatabase connection object
     set_cookie // send set cookie header to manage session
+
+
+
+*** 
+    copy pest this code to check if user is logged in or NOT. if user is logged in then you will get a variable named user_id, else user will automatically be redirected to the log in page
+
+<?php
+
+include("../authentication/session_check.php");
+include("../db_connection.php");
+$conn = db_connection(); // Establish database connection
+
+$user_data = get_user_existence_and_id(conn: $conn);
+if ($user_data[0]) {
+    $user_id = $user_data[1];
+} else {
+    header(header: "Location: ../authentication/login.php");
+    exit();
+}
+
+?>
+
+***

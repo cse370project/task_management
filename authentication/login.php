@@ -7,6 +7,7 @@ $user_exist = get_user_existence_and_id(conn: $conn)[0]; // Check if the user is
 
 if ($user_exist === True) {
     header(header: "Location: ../home.php"); // Redirect to home page if user is already logged in
+    exit();
 }
 
 if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -17,6 +18,7 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
     $ip_address = $_SERVER['REMOTE_ADDR'];
 } else {
     header(header: "Location: ./login.php");
+    exit();
 }
 
 $user_agent =$_SERVER['HTTP_USER_AGENT'];
@@ -65,6 +67,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
             set_cookie(name: 'session_id', value: $session_id,expire_in_seconds: 86400, path: '/', domain: '', secure: False, httponly: False);
             // Redirect to the home page
             header(header: "Location: ../home.php");
+            exit();
         } else {
             echo "<script>alert('Error: Could not log in due to unexpected error. Please try again.');</script>";
         }

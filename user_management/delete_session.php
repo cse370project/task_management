@@ -14,6 +14,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
     }else{
        
         header(header: "Location: ../authentication/login.php");
+        exit();
     }
 
     // Read the raw POST request body
@@ -43,6 +44,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 } else {
     echo"<script>alert('issue found');</script>";
     header(header: "Location: ../authentication/login.php");
+    exit();
 }
 
 ?>

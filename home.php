@@ -6,6 +6,7 @@ $user_data = get_user_existence_and_id(conn: $conn);
 $user_exist = $user_data[0];
 if ($user_exist === False) {
     header(header: "Location: authentication/login.php"); // Redirect to login page if user is not logged in
+    exit();
 } else {
     $user_id = $user_data[1]; // Get the user ID from the session
     $sql = "SELECT * FROM user WHERE user_id = '$user_id'";
@@ -38,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 
             
             header(header: "Location: authentication/login.php");
+            exit();
         }
     } 
 }

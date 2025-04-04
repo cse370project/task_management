@@ -65,6 +65,7 @@ if ($user_data[0]){
           $result = $conn->query(query: $sql);
           if ($result){
               header(header: "Location: personal_profile.php");
+              exit();
           } else{
           $error[] = "Failed to update profile. Please try again.";
           }
@@ -78,7 +79,7 @@ if ($user_data[0]){
     $row = $result->fetch_assoc();
 } else {
     header(header: "Location: ../authentication/login.php");
-    exit;
+    exit();
 }
 ?>
 
