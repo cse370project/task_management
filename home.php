@@ -136,6 +136,18 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         .group-button:hover {
             background-color: #146c43;
         }
+        .admin-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .admin-button {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+        .admin-button:hover {
+            background-color: #c82333;
+        }
 
         .logout-form {
             position: absolute;
@@ -174,6 +186,11 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
                 <a href="user_management/personal_profile.php" class="action-button personal-button">Personal Profile</a>
                 <a href="colaboration/groups.php" class="action-button group-button">Groups</a>
             </div>
+            <?php   if ($type === 'admin') { ?>
+                <div class="admin-buttons">
+                    <a href="admin/admin.php" class="action-button admin-button">Admin Panel</a>
+                </div>
+            <?php } ?>
         </div>
     </div>
 </body>

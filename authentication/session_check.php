@@ -116,4 +116,18 @@ function get_all_sessions($conn, $user_id): ?object {
     }
 }
 
+
+function user_type( $conn, $user_id): string {
+    
+    $sql = "SELECT * FROM user WHERE user_id = '$user_id'";
+    $result = $conn->query(query: $sql);
+    if ($result->num_rows > 0) {
+        $rows = $result->fetch_assoc();
+        return $rows["type"]; // Return the user type
+    }else{
+        return "Null"; // User not found
+    }
+
+}
+
 ?>
