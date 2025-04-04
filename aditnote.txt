@@ -28,13 +28,15 @@ CREATE TABLE session (
 );
 
 CREATE TABLE report (
-    user_id INT,
+    user_id INT NOT NULL,
     report_id CHAR(128) PRIMARY KEY,
-    subject VARCHAR(100),
-    details VARCHAR(1000),
+    subject VARCHAR(100) NOT NULL,
+    details VARCHAR(1000) NOT NULL,
+    file_extension CHAR(4) COLLATE NULL DEFAULT NULL,
+    submission_date DATE NOT NULL,
+    status CHAR(1) COLLATE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
-
 
 
 
