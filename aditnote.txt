@@ -20,21 +20,21 @@ CREATE TABLE user (
 
 
 CREATE TABLE session (
-    user_id INT,
+    user_id INT NOT NULL,
     session_id CHAR(128) PRIMARY KEY,
-    expire_time DATETIME,
-    device_login_info VARCHAR(809),
+    expire_time DATETIME NOT NULL,
+    device_login_info VARCHAR(809) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE report (
+CREATE TABLE reports (
     user_id INT NOT NULL,
     report_id CHAR(128) PRIMARY KEY,
     subject VARCHAR(100) NOT NULL,
     details VARCHAR(1000) NOT NULL,
-    file_extension CHAR(4) COLLATE NULL DEFAULT NULL,
+    file_extension CHAR(4) DEFAULT NULL,
     submission_date DATE NOT NULL,
-    status CHAR(1) COLLATE NOT NULL,
+    status CHAR(1) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
@@ -51,7 +51,7 @@ functions I have created are
 
 *** 
     copy pest this code to check if user is logged in or NOT. if user is logged in then you will get a variable named user_id, else user will automatically be redirected to the log in page
-
+    remember to change the file path in include functions acording to your file location
 <?php
 
 include("../authentication/session_check.php");

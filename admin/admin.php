@@ -19,8 +19,6 @@ if (user_type(conn: $conn, user_id: $user_id) == "admin") {
     echo "<a>You are not authorized to access this page.</a>";
     exit();
 }
-    
-
 
 ?>
 
