@@ -14,8 +14,7 @@ if ($user_exist) {
     header(header: "Location: welcome.html"); // Redirect to login page if user is not logged in
     exit();
 }
-=======
-//dsftgdfdfgfd
+
 
 
 ?>
