@@ -1,6 +1,6 @@
 <?php
-$servername = "localhost";  // Server name (usually localhost for local development)
-$username = "tm_admin";         // Your MySQL username
+$servername = "localhost";  
+$username = "tm_admin";         
 $password = "tmadmin1234";            
 $dbname = "task_management"; 
 
