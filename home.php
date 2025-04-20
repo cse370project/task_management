@@ -13,7 +13,6 @@ if ($user_exist === False) {
     $result = $conn->query(query: $sql);
     $row = $result->fetch_assoc();
     $name = $row['name'];
-    $type = $row['type'];
     $joining_date = $row['joining_date'];
 
 }
@@ -186,7 +185,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
                 <a href="user_management/personal_profile.php" class="action-button personal-button">Personal Profile</a>
                 <a href="colaboration/groups.php" class="action-button group-button">Groups</a>
             </div>
-            <?php   if ($type === 'admin') { ?>
+            <?php   if (user_type(conn: $conn, user_id: $user_id) == "admin") { ?>
                 <div class="admin-buttons">
                     <a href="admin/admin.php" class="action-button admin-button">Admin Panel</a>
                 </div>
