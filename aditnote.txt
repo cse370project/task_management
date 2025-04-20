@@ -1,0 +1,71 @@
+Create necessery tables and database using command bellow
+
+CREATE TABLE user (
+    user_id INT(11) NOT NULL AUTO_INCREMENT,
+    username VARCHAR(30) NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    type VARCHAR(5) NOT NULL,
+    password_hash CHAR(88) NOT NULL,
+    birth_date DATE DEFAULT NULL,
+    joining_date DATE NOT NULL,
+    phone_number VARCHAR(20) DEFAULT NULL,
+    email VARCHAR(320) DEFAULT NULL,
+    gender CHAR(1) DEFAULT NULL,
+    profession VARCHAR(100) DEFAULT NULL,
+    PRIMARY KEY (user_id),
+    UNIQUE KEY (username),
+    UNIQUE KEY (phone_number),
+    UNIQUE KEY (email)
+);
+
+
+CREATE TABLE session (
+    user_id INT NOT NULL,
+    session_id CHAR(128) PRIMARY KEY,
+    expire_time DATETIME NOT NULL,
+    device_login_info VARCHAR(809) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE reports (
+    user_id INT NOT NULL,
+    report_id CHAR(128) PRIMARY KEY,
+    subject VARCHAR(100) NOT NULL,
+    details VARCHAR(1000) NOT NULL,
+    file_extension CHAR(4) DEFAULT NULL,
+    submission_date DATE NOT NULL,
+    status CHAR(1) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
+
+
+functions I have created are 
+    cookie_exist // takes no input and return true or false
+    get_session_from_cookie // takes no input and return "Null" or <session_id of length 128> which is a string
+    ***get_user_existence_and_id // takes the database connection object as input and return an array|| 0th index is True or False, 1th index is the user_id of the user if identified
+    ***db_connection // takes no input and return daatabase connection object
+    set_cookie // send set cookie header to manage session
+
+
+
+*** 
+    copy pest this code to check if user is logged in or NOT. if user is logged in then you will get a variable named user_id, else user will automatically be redirected to the log in page
+    remember to change the file path in include functions acording to your file location
+<?php
+
+include("../authentication/session_check.php");
+include("../db_connection.php");
+$conn = db_connection(); // Establish database connection
+
+$user_data = get_user_existence_and_id(conn: $conn);
+if ($user_data[0]) {
+    $user_id = $user_data[1];
+} else {
+    header(header: "Location: ../authentication/login.php");
+    exit();
+}
+
+?>
+
+***
