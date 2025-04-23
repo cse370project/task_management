@@ -2,9 +2,8 @@
 
 $servername = "localhost";  
 $username = "tm_admin";         
-=======
-function db_connection(): mysqli{
 
+function db_connection(): mysqli{
 $servername = "localhost";  // Server name (usually localhost for local development)
 $serverusername = "tm_admin";       
 
