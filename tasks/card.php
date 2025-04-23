@@ -347,7 +347,6 @@ $result = $stmt->get_result();
 
 <body>
     <h2>Task Cards</h2>
-
     <?php while ($row = $result->fetch_assoc()): ?>
         <div class="task-card">
             <div class="task-header">
