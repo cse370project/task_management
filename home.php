@@ -181,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             echo "<h2 class='date'> joining date : <span class='name'>$joining_date</span></h2>";
             ?>
             <div class="buttons">
-                <a href="task_manager/dashboard.php" class="action-button dashboard-button">Dashboard</a>
+                <a href="tasks/task.php" class="action-button dashboard-button">Tasks</a>
                 <a href="user_management/personal_profile.php" class="action-button personal-button">Personal Profile</a>
                 <a href="colaboration/groups.php" class="action-button group-button">Groups</a>
             </div>
