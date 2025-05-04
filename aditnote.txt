@@ -18,6 +18,7 @@ CREATE TABLE user (
     UNIQUE KEY (email)
 );
 
+
 CREATE TABLE session (
     user_id INT NOT NULL,
     session_id CHAR(128) PRIMARY KEY,
@@ -25,6 +26,7 @@ CREATE TABLE session (
     device_login_info VARCHAR(809) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE reports (
     user_id INT NOT NULL,
@@ -37,52 +39,56 @@ CREATE TABLE reports (
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
+
 CREATE TABLE groups ( 
     group_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, 
     name VARCHAR(30) NOT NULL, 
-    description VARCHAR(200) 
+    description VARCHAR(200)
 );
+
 
 CREATE TABLE member ( 
     membership_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, 
-    type ENUM('general', 'leader') NOT NULL 
+    user_id INT NOT NULL,
+    type ENUM('general', 'leader') NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE joined_group ( 
-    user_id INT, 
-    membership_id INT, 
-    group_id INT, 
-    joining_date DATETIME, 
-    PRIMARY KEY(user_id, membership_id, group_id), 
-    FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (membership_id) REFERENCES member(membership_id), 
-    FOREIGN KEY (group_id) REFERENCES groups(group_id) 
+    membership_id INT NOT NULL, 
+    group_id INT NOT NULL, 
+    joining_date DATETIME,
+    PRIMARY KEY(membership_id, group_id), 
+    FOREIGN KEY (membership_id) REFERENCES member(membership_id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE CASCADE
 );
 
+
 CREATE TABLE created_group ( 
-    user_id INT, 
-    membership_id INT, 
-    group_id INT, 
-    creation_date DATETIME, 
-    PRIMARY KEY(user_id, membership_id, group_id), 
-    FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (membership_id) REFERENCES member(membership_id), 
-    FOREIGN KEY (group_id) REFERENCES groups(group_id) 
+    membership_id INT NOT NULL, 
+    group_id INT NOT NULL, 
+    creation_date DATETIME,
+    PRIMARY KEY(membership_id, group_id), 
+    FOREIGN KEY (membership_id) REFERENCES member(membership_id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE task ( 
     task_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    status ENUM('todo','done','dismissed') NOT NULL,
+    status ENUM('todo', 'done', 'dismissed') NOT NULL,
     title VARCHAR(30), 
     detail VARCHAR(200),
-    creation_time DATETIME NOT NULL
+    creation_time DATETIME NOT NULL,
     deadline DATETIME, 
-    type ENUM('private','group') NOT NULL, 
+    type ENUM('private', 'group') NOT NULL, 
     user_id INT,
     membership_id INT,
-    FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (membership_id) REFERENCES member(membership_id)
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (membership_id) REFERENCES member(membership_id) ON DELETE SET NULL
 );
+
 
 
 
