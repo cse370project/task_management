@@ -527,6 +527,7 @@ $conn->close();
                         <div class="task-actions">
                             <button class="action-btn done-btn" data-task-id="<?= $task['task_id'] ?>" onclick="showConfirmation('done', <?= $task['task_id'] ?>)">Done</button>
                             <button class="action-btn dismiss-btn" data-task-id="<?= $task['task_id'] ?>" onclick="showConfirmation('dismissed', <?= $task['task_id'] ?>)">Dismiss</button>
+                            <button style="background-color: black;" class="action-btn done-btn" onclick="window.location.href='edit_task.php?task_id=<?= $task['task_id'] ?>'">Edit</button>
                             <button class="action-btn delete-btn" data-task-id="<?= $task['task_id'] ?>" onclick="showConfirmation('delete', <?= $task['task_id'] ?>)">Delete</button>
                         </div>
                     </li>
@@ -564,6 +565,7 @@ $conn->close();
                     confirmationText = "Delete this task?";
                     break;
             }
+            
             document.getElementById("confirmationText").textContent = confirmationText;
             document.getElementById("confirmationOverlay").style.display = "flex";
         }
