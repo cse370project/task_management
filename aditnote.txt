@@ -72,8 +72,10 @@ CREATE TABLE created_group (
 
 CREATE TABLE task ( 
     task_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    status ENUM('todo','done','dismissed') NOT NULL,
     title VARCHAR(30), 
-    detail VARCHAR(200), 
+    detail VARCHAR(200),
+    creation_time DATETIME NOT NULL
     deadline DATETIME, 
     type ENUM('private','group') NOT NULL, 
     user_id INT,
