@@ -1,5 +1,14 @@
 Create necessery tables and database using command bellow
 
+DROP TABLE IF EXISTS task;
+DROP TABLE IF EXISTS created_group;
+DROP TABLE IF EXISTS joined_group;
+DROP TABLE IF EXISTS member;
+DROP TABLE IF EXISTS groups;
+DROP TABLE IF EXISTS reports;
+DROP TABLE IF EXISTS session;
+DROP TABLE IF EXISTS user;
+
 CREATE TABLE user (
     user_id INT(11) NOT NULL AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL,
@@ -18,7 +27,6 @@ CREATE TABLE user (
     UNIQUE KEY (email)
 );
 
-
 CREATE TABLE session (
     user_id INT NOT NULL,
     session_id CHAR(128) PRIMARY KEY,
@@ -26,7 +34,6 @@ CREATE TABLE session (
     device_login_info VARCHAR(809) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE reports (
     user_id INT NOT NULL,
@@ -39,13 +46,11 @@ CREATE TABLE reports (
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE groups ( 
     group_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, 
     name VARCHAR(30) NOT NULL, 
     description VARCHAR(200)
 );
-
 
 CREATE TABLE member ( 
     membership_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, 
@@ -53,7 +58,6 @@ CREATE TABLE member (
     type ENUM('general', 'leader') NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE joined_group ( 
     membership_id INT NOT NULL, 
@@ -64,7 +68,6 @@ CREATE TABLE joined_group (
     FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE created_group ( 
     membership_id INT NOT NULL, 
     group_id INT NOT NULL, 
@@ -73,7 +76,6 @@ CREATE TABLE created_group (
     FOREIGN KEY (membership_id) REFERENCES member(membership_id) ON DELETE CASCADE,
     FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE task ( 
     task_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -85,9 +87,10 @@ CREATE TABLE task (
     type ENUM('private', 'group') NOT NULL, 
     user_id INT,
     membership_id INT,
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
     FOREIGN KEY (membership_id) REFERENCES member(membership_id) ON DELETE SET NULL
 );
+
 
 
 

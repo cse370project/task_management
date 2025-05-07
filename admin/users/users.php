@@ -43,15 +43,10 @@ function display_all_users($conn) {
                 <th>Type</th>
                 <th>Join Date</th>
                 <th>Email</th>
-                <th>Status</th>
                 <th>Actions</th>
               </tr></thead><tbody>";
         
         while ($row = mysqli_fetch_assoc($result)) {
-            $status = is_user_logged_in($conn, $row['user_id']) ? 
-                "<span class='badge badge-success'>Online</span>" : 
-                "<span class='badge badge-secondary'>Offline</span>";
-            
             echo "<tr>";
             echo "<td>" . htmlspecialchars($row['user_id']) . "</td>";
             echo "<td>" . htmlspecialchars($row['username']) . "</td>";
@@ -59,7 +54,6 @@ function display_all_users($conn) {
             echo "<td>" . htmlspecialchars($row['type']) . "</td>";
             echo "<td>" . htmlspecialchars($row['joining_date']) . "</td>";
             echo "<td>" . htmlspecialchars($row['email']) . "</td>";
-            echo "<td>$status</td>";
             echo "<td>
                     <form method='post' style='display:inline;'>
                         <input type='hidden' name='user_id' value='" . $row['user_id'] . "'>
@@ -76,15 +70,6 @@ function display_all_users($conn) {
     } else {
         echo "<div class='alert alert-info'>No users found.</div>";
     }
-}
-
-function is_user_logged_in($conn, $user_id) {
-    $query = "SELECT 1 FROM session WHERE user_id = ? AND expire_time > NOW() LIMIT 1";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "i", $user_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    return (mysqli_num_rows($result) > 0);
 }
 
 function delete_user($conn, $user_id) {
@@ -110,39 +95,51 @@ function delete_user($conn, $user_id) {
             padding: 20px;
             background-color: #f8f9fa;
         }
-        .admin-header {
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid #dee2e6;
+        }
+        .header-center {
+            flex-grow: 1;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
         }
         .table-container {
             background-color: white;
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="admin-header d-flex justify-content-between align-items-center">
-            <h1><i class="fas fa-users-cog"></i> User Management</h1>
+        <div class="header-container">
             <a href="dashboard.php" class="btn btn-primary">
-                <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+                <i class="fas fa-arrow-left"></i> Back
             </a>
+            
+            <div class="header-center">
+                <i class="fas fa-users-gear fa-lg" style="color: #0d6efd;"></i>
+                <h1 class="mb-0">User Management</h1>
+            </div>
+            
+            <div></div> <!-- Empty div for balance -->
         </div>
 
         <?php if (isset($message)) echo $message; ?>
 
         <div class="table-container">
-            <div class="d-flex justify-content-between mb-3">
-                <h3>All Users</h3>
-                <div>
-                    <span class="badge badge-success">Online</span>
-                    <span class="badge badge-secondary">Offline</span>
-                </div>
-            </div>
-            
+            <h3>All Users</h3>
             <?php display_all_users($conn); ?>
         </div>
     </div>
