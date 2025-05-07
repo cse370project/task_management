@@ -124,7 +124,7 @@ function delete_user($conn, $user_id) {
 <body>
     <div class="container">
         <div class="header-container">
-            <a href="dashboard.php" class="btn btn-primary">
+            <a href="../admin.php" class="btn btn-primary">
                 <i class="fas fa-arrow-left"></i> Back
             </a>
             
