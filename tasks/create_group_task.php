@@ -21,6 +21,22 @@ $group_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 ?>
 
+<?php
+// Check if the user is an admin
+if (user_type(conn: $conn, user_id: $user_id) == "admin") {
+    echo "<a>You are not authorized to access this page.</a>";
+    exit();
+}
+
+?>
+
+
+
+
+
+
+
+
 
 
 
@@ -118,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = trim($_POST['title'] ?? '');
     $detail = trim($_POST['detail'] ?? '');
     $deadline_input = trim($_POST['deadline'] ?? '');
-    $type = 'private'; // Force type to private
+    $type = 'group'; // Force type to private
     $status = 'todo'; // Default status for new tasks
 
     // Validation

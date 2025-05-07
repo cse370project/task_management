@@ -181,9 +181,13 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             echo "<h2 class='date'> joining date : <span class='name'>$joining_date</span></h2>";
             ?>
             <div class="buttons">
+            <?php if (user_type(conn: $conn, user_id: $user_id) !== "admin") { ?>
                 <a href="tasks/task.php" class="action-button dashboard-button">Tasks</a>
+            <?php } ?>
                 <a href="user_management/personal_profile.php" class="action-button personal-button">Personal Profile</a>
+            <?php if (user_type(conn: $conn, user_id: $user_id) !== "admin") { ?>
                 <a href="colaboration/groups.php" class="action-button group-button">Groups</a>
+            <?php } ?>
             </div>
             <?php   if (user_type(conn: $conn, user_id: $user_id) == "admin") { ?>
                 <div class="admin-buttons">

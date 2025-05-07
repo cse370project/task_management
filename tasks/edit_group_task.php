@@ -1,17 +1,27 @@
 <?php
-require_once("../authentication/session_check.php");
-require_once("../db_connection.php");
 
-$conn = db_connection();
+include("../authentication/session_check.php");
+include("../db_connection.php");
+$conn = db_connection(); // Establish database connection
 
-// Check user login status
 $user_data = get_user_existence_and_id(conn: $conn);
-if (!$user_data[0]) {
-    header("Location: ../authentication/login.php");
+if ($user_data[0]) {
+    $user_id = $user_data[1];
+} else {
+    header(header: "Location: ../authentication/login.php");
     exit();
 }
-$user_id = $user_data[1];
+$current_user_id = $user_id;
+$current_user_role = "non-member";
+$group_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
+if ($group_id === null || $group_id === false) {
+    $group_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+}
+
+
+?>
+<?php
 
 
 // Check if the user is an admin
@@ -20,7 +30,108 @@ if (user_type(conn: $conn, user_id: $user_id) == "admin") {
     exit();
 }
 
+?>
 
+
+
+
+
+
+
+
+
+
+
+<?php
+
+
+
+
+// Fetch leader info
+$stmt_leader = $conn->prepare("
+    SELECT u.user_id, u.name
+    FROM groups g
+    JOIN created_group cg ON g.group_id = cg.group_id
+    JOIN member m ON cg.membership_id = m.membership_id
+    JOIN user u ON cg.user_id = u.user_id
+    WHERE g.group_id = ?
+    AND m.type = 'leader';
+");
+if ($stmt_leader) {
+    $stmt_leader->bind_param("i", $group_id);
+    $stmt_leader->execute();
+    $result_leader = $stmt_leader->get_result();
+    if ($result_leader->num_rows > 0) {
+        $leader_info = $result_leader->fetch_assoc();
+    }
+    $stmt_leader->close();
+    // No need to handle case where leader is not found, as it should always exist if group exists
+} else {
+     error_log("Error preparing leader info statement: " . $conn->error);
+     // Continue without leader info, maybe show 'Unknown'
+}
+if ($leader_info['user_id'] == $current_user_id) {
+    $current_user_role = 'leader'; // User is the leader of this group
+} else {
+    // Check if user is a general member
+    $stmt_check_member = $conn->prepare("SELECT membership_id FROM joined_group WHERE user_id = ? AND group_id = ?");
+    if ($stmt_check_member) {
+        $stmt_check_member->bind_param("ii", $current_user_id, $group_id);
+        $stmt_check_member->execute();
+        $res_check_member = $stmt_check_member->get_result();
+        if ($res_check_member->num_rows > 0) {
+            $current_user_role = 'general'; // User is a general member
+        }
+        $stmt_check_member->close();
+    } else {
+         error_log("Error preparing check member statement: " . $conn->error);
+    }
+}
+
+if ($current_user_role == 'non-member') {
+   echo " You are not authorized to edit this Task.";
+    exit();
+}
+
+// membership varification is done
+// next to this will be task list and other things
+?>
+
+<?php
+
+
+$sql = "SELECT membership_id 
+FROM created_group 
+WHERE user_id = '$user_id' AND group_id = '$group_id' 
+UNION 
+SELECT membership_id 
+FROM joined_group 
+WHERE user_id = '$user_id' AND group_id = '$group_id'";
+
+$result = $conn->query($sql);
+
+$membership_id = $result->fetch_assoc()['membership_id'];
+$task_id_to_update = filter_input(INPUT_GET, 'task_id', FILTER_SANITIZE_NUMBER_INT);
+
+//got the membership id to verify task ownership
+?>
+
+<?php
+
+$stmt_check_owner = $conn->prepare("SELECT task_id FROM task WHERE task_id = ? AND membership_id = ?");
+                $stmt_check_owner->bind_param("ii", $task_id_to_update, $membership_id);
+                $stmt_check_owner->execute();
+                $result_check_owner = $stmt_check_owner->get_result();
+                if ($result_check_owner->num_rows == 0 && $current_user_role !== 'leader') {
+                    
+                    echo "You are not authorized for this action.";
+                    exit();
+                }
+
+?>
+
+
+<?php
 
 // Initialize variables
 $error_message = '';
@@ -33,9 +144,9 @@ if (isset($_GET['task_id'])) {
     $task_id = filter_input(INPUT_GET, 'task_id', FILTER_SANITIZE_NUMBER_INT);
     
     // Fetch the task data
-    $sql = "SELECT * FROM task WHERE task_id = ? AND user_id = ?";
+    $sql = "SELECT * FROM task WHERE task_id = ?";
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("ii", $task_id, $user_id);
+        $stmt->bind_param("i", $task_id);
         if ($stmt->execute()) {
             $result = $stmt->get_result();
             $task = $result->fetch_assoc();
@@ -89,10 +200,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $task_id) {
                     detail = ?, 
                     deadline = ?, 
                     status = ? 
-                    WHERE task_id = ? AND user_id = ?";
+                    WHERE task_id = ? ";
             
             if ($stmt = $conn->prepare($sql)) {
-                $stmt->bind_param("ssssii", $title, $detail, $deadline, $status, $task_id, $user_id);
+                $stmt->bind_param("ssssi", $title, $detail, $deadline, $status, $task_id);
                 
                 if ($stmt->execute()) {
                     $success_message = "Task updated successfully!";
@@ -294,7 +405,7 @@ $conn->close();
 <body>
     <div class="container">
         <div class="page-header">
-            <a href="task.php" class="btn btn-secondary">Back to Tasks</a>
+            <a href="group_task.php?id=<?=$group_id?>" class="btn btn-secondary">Back to Tasks</a>
         </div>
 
         <h1>Edit Task</h1>
@@ -306,7 +417,7 @@ $conn->close();
         <?php endif; ?>
 
         <?php if ($task): ?>
-            <form action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>?task_id=<?= $task_id ?>" method="post" class="task-form">
+            <form action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>?id=<?=$group_id?>&task_id=<?= $task_id ?>" method="post" class="task-form">
                 <div class="form-group">
                     <label for="title" class="required-field">Task Title</label>
                     <input type="text" id="title" name="title" maxlength="30" required 

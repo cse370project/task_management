@@ -18,6 +18,15 @@ if (!$user_data[0]) {
 }
 $user_id = $user_data[1];
 
+
+
+// Check if the user is an admin
+if (user_type(conn: $conn, user_id: $user_id) == "admin") {
+    echo "<a>You are not authorized to access this page.</a>";
+    exit();
+}
+
+
 // Get search term from query parameters, trim whitespace
 $search_term = isset($_GET['search']) ? trim($_GET['search']) : null;
 
