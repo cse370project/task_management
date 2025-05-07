@@ -19,6 +19,15 @@ if ($user_data[0]) {
     header("Location: ../authentication/login.php?redirect=" . urlencode($_SERVER['REQUEST_URI']));
 }
 
+
+
+// Check if the user is an admin
+if (user_type(conn: $conn, user_id: $current_user_id) == "admin") {
+    echo "<a>You are not authorized to access this page.</a>";
+    exit();
+}
+
+
 // Get group ID from URL parameter and sanitize
 $group_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
