@@ -2,37 +2,50 @@
 
 ## Overview
 
-This is a **Task Management System** where users can log in, log out, change passwords, and delete accounts. Admins have the ability to view all reports, accept or reject tasks, and delete users. This system is built using the following technologies:
+This **Task Management System** allows users to:
+
+- Create and manage groups.
+- Assign **Group Admin** roles.
+- Perform **Task CRUD** (Create, Read, Update, Delete) operations within their group.
+  
+The system is built using:
 
 - **Frontend**: HTML, CSS, JavaScript
 - **Backend**: MySQL, PHP, Apache
+
+You can access the live version of this system [here](http://ehadit.mooo.com:370/welcome.html).
 
 ---
 
 ## Features
 
-### User Features:
-- **Login**: Secure login to the system.
-- **Logout**: Secure logout functionality.
-- **Change Password**: Allows users to update their password.
-- **Delete Account**: Users can delete their accounts and related data.
-- **Session Management**: Ensures an active session for authenticated users.
+### Group Features:
 
-### Admin Features:
-- **View Reports**: Admins can view reports created by users.
-- **Accept or Reject Tasks**: Admins can approve or decline tasks.
-- **Delete User**: Admins can delete users from the system.
+1. **Group Creation**:  
+   - Users can create new groups.
+   - A user who creates a group is automatically assigned as the **Group Admin**.
+  
+2. **Group Admin Role**:  
+   - The **Group Admin** has special privileges within their group.
+   - A **Group Admin** can:
+     - **Add tasks** to the group.
+     - **Update tasks** within the group.
+     - **Delete tasks** from the group.
+
+3. **Task CRUD Operations**:  
+   **Group Admins** can manage tasks within their group through the following operations:
+
+   - **Create Task**: Group admins can add new tasks within the group.
+   - **Read Task**: Users can view tasks assigned to their group.
+   - **Update Task**: Group admins can update task details (e.g., description, status).
+   - **Delete Task**: Group admins can delete tasks from the group.
 
 ---
 
 ## Technologies Used
 
-### Frontend
-- **HTML**: Structure of the website.
-- **CSS**: Styling the pages.
-- **JavaScript**: Client-side interactions and form validations.
+- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: PHP, MySQL
+- **Web Server**: Apache
 
-### Backend
-- **PHP**: Server-side scripting language for handling user authentication and data.
-- **MySQL**: Database management system for storing user data, tasks, reports, etc.
-- **Apache**: Web server to serve PHP applications.
+---
