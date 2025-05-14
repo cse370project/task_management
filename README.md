@@ -1,51 +1,73 @@
 # Task Management System
 
 ## Overview
-
-This **Task Management System** allows users to:
-
-- Create and manage groups.
-- Assign **Group Admin** roles.
-- Perform **Task CRUD** (Create, Read, Update, Delete) operations within their group.
-  
-The system is built using:
-
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: MySQL, PHP, Apache
-
-You can access the live version of this system [here](http://ehadit.mooo.com:370/welcome.html).
+The *Task Management System* is a web-based platform designed to streamline task management, group collaboration, and report handling. It provides a user-friendly interface for users to manage their tasks, collaborate in groups, and submit reports, while offering an admin panel for administrative oversight.
 
 ---
 
 ## Features
 
-### Group Features:
+### 1. *Authentication*
+- Secure user login and registration.
+- Session management with cookies.
+- Role-based access control (Admin, Leader, General Member).
 
-1. **Group Creation**:  
-   - Users can create new groups.
-   - A user who creates a group is automatically assigned as the **Group Admin**.
-  
-2. **Group Admin Role**:  
-   - The **Group Admin** has special privileges within their group.
-   - A **Group Admin** can:
-     - **Add tasks** to the group.
-     - **Update tasks** within the group.
-     - **Delete tasks** from the group.
+### 2. *Task Management*
+- Create, edit, and delete tasks.
+- Tasks categorized as:
+  - *Private Tasks*: Managed by individual users.
+  - *Group Tasks*: Shared within groups.
+- Task status tracking: To-Do, Done, Dismissed.
+- Deadlines and task details management.
 
-3. **Task CRUD Operations**:  
-   **Group Admins** can manage tasks within their group through the following operations:
+### 3. *Group Collaboration*
+- Create and manage groups.
+- Join and leave groups.
+- Group leaders can:
+  - Assign tasks to group members.
+  - Manage group details and members.
+- Group search functionality.
 
-   - **Create Task**: Group admins can add new tasks within the group.
-   - **Read Task**: Users can view tasks assigned to their group.
-   - **Update Task**: Group admins can update task details (e.g., description, status).
-   - **Delete Task**: Group admins can delete tasks from the group.
+### 4. *Report Management*
+- Submit detailed reports with optional file attachments.
+- Admins can:
+  - View, filter, and manage reports.
+  - Approve or reject submitted reports.
+
+### 5. *User Management*
+- Personal profile management.
+- View and update user details.
+- Gender, profession, and contact information handling.
+
+### 6. *Admin Panel*
+- Dedicated admin dashboard.
+- Manage users, groups, and reports.
+- Oversee system activities.
+
+### 7. *Database Design*
+- Relational database with the following tables:
+  - user, session, task, groups, member, reports, created_group, joined_group.
+- Foreign key constraints for data integrity.
+
+### 8. *Responsive Design*
+- Fully responsive UI for desktop and mobile devices.
+- Styled using *CSS* and *Tailwind CSS*.
+- Interactive buttons and modals for better user experience.
+
+### 9. *Security*
+- Input sanitization to prevent SQL injection.
+- Secure session and cookie management.
 
 ---
 
-## Technologies Used
+## Installation
 
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: PHP, MySQL
-- **Web Server**: Apache
+### Prerequisites
+- *PHP* (Version 7.4 or higher)
+- *MySQL* (Version 5.7 or higher)
+- A web server (e.g., Apache or Nginx)
 
----
+### Steps
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
