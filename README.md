@@ -1,4 +1,4 @@
-![Alt text](image-url)
+![Alt text](https://imgur.com/a/CvOu0d4)
 
 # Task Management System
 
