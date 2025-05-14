@@ -1,6 +1,6 @@
 ![EduManage Banner](https://i.postimg.cc/Z53gpQhD/Screenshot-2025-05-14-204748.png)
 
-# Task Management System
+# Task Master
 
 ## Overview
 The *Task Management System* is a web-based platform designed to streamline task management, group collaboration, and report handling. It provides a user-friendly interface for users to manage their tasks, collaborate in groups, and submit reports, while offering an admin panel for administrative oversight.
