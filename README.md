@@ -1,4 +1,4 @@
-![EduManage Banner](https://imgur.com/a/zo9oE67)
+![EduManage Banner](https://i.postimg.cc/Z53gpQhD/Screenshot-2025-05-14-204748.png)
 
 # Task Management System
 
