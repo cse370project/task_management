@@ -1,4 +1,4 @@
-![Alt text](https://imgur.com/a/CvOu0d4)
+![EduManage Banner](https://imgur.com/a/zo9oE67)
 
 # Task Management System
 
