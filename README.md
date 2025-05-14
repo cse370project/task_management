@@ -1,3 +1,5 @@
+![Alt text](image-url)
+
 # Task Management System
 
 ## Overview
